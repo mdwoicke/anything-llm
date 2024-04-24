@@ -1,33 +1,26 @@
-version: '3.9'
-
-name: anythingllm
-
-networks:
-  anything-llm:
-    driver: bridge
+# Will create a Standard AnythingLLM docker container
+# with a 10GB storage disk mounted to /storage
+# See Standard compute tier  pricing costs: https://render.com/pricing
+# Standard tier will give the best performance, anything lower do not
+# expect fast chats, embeddings, or other functionality.
 
 services:
-  anything-llm:
-    container_name: anything-llm
-    image: anything-llm:latest
-    platform: linux/amd64
-    build:
-      context: ../.
-      dockerfile: ./docker/Dockerfile
-      args:
-        ARG_UID: ${UID:-1000}
-        ARG_GID: ${GID:-1000}
-    volumes:
-      - "./.env:/app/server/.env"
-      - "../server/storage:/app/server/storage"
-      - "../collector/hotdir/:/app/collector/hotdir"
-      - "../collector/outputs/:/app/collector/outputs"
-    user: "${UID:-1000}:${GID:-1000}"
-    ports:
-      - "3001:3001"
-    env_file:
-      - .env
-    networks:
-      - anything-llm
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  - type: web
+    name: anythingllm
+    runtime: image
+    image: 
+      url: docker.io/mwoicke/anything-llm:render
+    region: oregon # optional (defaults to oregon)
+    plan: standard # optional (defaults to starter instance type)
+    numInstances: 1 # optional (defaults to 1)
+    healthCheckPath: /api/ping
+    autoDeploy: false
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: STORAGE_DIR
+        value: '/storage'
+    disk:
+      name: AnythingLLM Storage
+      mountPath: /storage
+      sizeGB: 10
