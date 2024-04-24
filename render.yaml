@@ -9,7 +9,7 @@ services:
     name: anythingllm
     runtime: image
     image: 
-      url: docker.io/mwoicke/anything-llm:render
+      url: docker.io/cycloner/anythingllm:latest
     region: oregon # optional (defaults to oregon)
     plan: standard # optional (defaults to starter instance type)
     numInstances: 1 # optional (defaults to 1)
